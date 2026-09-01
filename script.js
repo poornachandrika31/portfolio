@@ -129,13 +129,13 @@ function animateCounter(el, target, isDecimal = false) {
       el.textContent = (progress * target).toFixed(2);
     } else {
       const val = Math.floor(progress * target);
-      el.textContent = val + (target > 5 ? '+' : '');
+      el.textContent = val + (target >= 8 ? '+' : '');
     }
 
     if (progress < 1) {
       requestAnimationFrame(step);
     } else {
-      el.textContent = isDecimal ? target : target + (target > 5 ? '+' : '');
+      el.textContent = isDecimal ? target : target + (target >= 8 ? '+' : '');
     }
   };
   requestAnimationFrame(step);
@@ -158,7 +158,7 @@ const statsEl = document.querySelector('.hero-stats');
 if (statsEl) statsObs.observe(statsEl);
 
 // ===== 3D GLASS CARD TILT EFFECT =====
-document.querySelectorAll('.project-card, .pub-card, .award-item, .cert-item').forEach(card => {
+document.querySelectorAll('.project-card, .pub-card, .award-item, .cert-item, .leadership-card').forEach(card => {
   card.addEventListener('mousemove', e => {
     const rect = card.getBoundingClientRect();
     const x = e.clientX - rect.left;
