@@ -4,36 +4,40 @@ window.addEventListener('scroll', () => {
   navbar.classList.toggle('scrolled', window.scrollY > 40);
 });
 
-// ===== HAMBURGER =====
+// ===== HAMBURGER MENU =====
 const hamburger = document.getElementById('hamburger');
 const navLinks = document.getElementById('nav-links');
-hamburger.addEventListener('click', () => {
-  navLinks.classList.toggle('open');
-  const spans = hamburger.querySelectorAll('span');
-  if (navLinks.classList.contains('open')) {
-    spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
-    spans[1].style.opacity = '0';
-    spans[2].style.transform = 'rotate(-45deg) translate(5px, -5px)';
-  } else {
-    spans[0].style.transform = '';
-    spans[1].style.opacity = '';
-    spans[2].style.transform = '';
-  }
-});
-navLinks.querySelectorAll('a').forEach(a => {
-  a.addEventListener('click', () => {
-    navLinks.classList.remove('open');
+
+if (hamburger && navLinks) {
+  hamburger.addEventListener('click', () => {
+    navLinks.classList.toggle('open');
     const spans = hamburger.querySelectorAll('span');
-    spans[0].style.transform = '';
-    spans[1].style.opacity = '';
-    spans[2].style.transform = '';
+    if (navLinks.classList.contains('open')) {
+      spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
+      spans[1].style.opacity = '0';
+      spans[2].style.transform = 'rotate(-45deg) translate(5px, -5px)';
+    } else {
+      spans[0].style.transform = '';
+      spans[1].style.opacity = '';
+      spans[2].style.transform = '';
+    }
   });
-});
+
+  navLinks.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      navLinks.classList.remove('open');
+      const spans = hamburger.querySelectorAll('span');
+      spans[0].style.transform = '';
+      spans[1].style.opacity = '';
+      spans[2].style.transform = '';
+    });
+  });
+}
 
 // ===== ACTIVE NAV LINK ON SCROLL =====
 const sections = document.querySelectorAll('section[id]');
 window.addEventListener('scroll', () => {
-  const scrollY = window.scrollY + 100;
+  const scrollY = window.scrollY + 140;
   sections.forEach(section => {
     const top = section.offsetTop;
     const height = section.offsetHeight;
@@ -50,11 +54,11 @@ window.addEventListener('scroll', () => {
 
 // ===== TYPEWRITER =====
 const words = [
-  'scalable REST APIs.',
-  'ML-powered systems.',
-  'full-stack applications.',
-  'backend architectures.',
-  'AI solutions.',
+  'Scalable REST APIs & Backend Architecture.',
+  'Distributed Streaming & ETL Systems.',
+  'Applied Deep Learning & Computer Vision.',
+  'Full Stack Web Applications.',
+  'Generative AI & Intelligent Agents.',
 ];
 let wordIndex = 0;
 let charIndex = 0;
@@ -62,6 +66,7 @@ let isDeleting = false;
 const tw = document.getElementById('typewriter');
 
 function type() {
+  if (!tw) return;
   const current = words[wordIndex];
   if (isDeleting) {
     tw.textContent = current.substring(0, charIndex - 1);
@@ -71,9 +76,9 @@ function type() {
     charIndex++;
   }
 
-  let speed = isDeleting ? 40 : 80;
+  let speed = isDeleting ? 30 : 70;
   if (!isDeleting && charIndex === current.length) {
-    speed = 2000;
+    speed = 2200;
     isDeleting = true;
   } else if (isDeleting && charIndex === 0) {
     isDeleting = false;
@@ -84,46 +89,54 @@ function type() {
 }
 type();
 
-// ===== SCROLL REVEAL FOR SKILL CARDS =====
-const skillCards = document.querySelectorAll('.skill-card');
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach((entry, i) => {
-    if (entry.isIntersecting) {
-      setTimeout(() => {
-        entry.target.classList.add('visible');
-      }, i * 80);
-    }
-  });
-}, { threshold: 0.1 });
-skillCards.forEach(card => observer.observe(card));
+// ===== PROJECT FILTERING =====
+const filterButtons = document.querySelectorAll('.filter-btn');
+const projectCards = document.querySelectorAll('.project-card');
 
-// ===== GLASS CARD TILT EFFECT =====
-document.querySelectorAll('.project-card, .pub-card').forEach(card => {
-  card.addEventListener('mousemove', e => {
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const cx = rect.width / 2;
-    const cy = rect.height / 2;
-    const rotX = ((y - cy) / cy) * 4;
-    const rotY = ((x - cx) / cx) * -4;
-    card.style.transform = `perspective(800px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateY(-4px)`;
-  });
-  card.addEventListener('mouseleave', () => {
-    card.style.transform = '';
+filterButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    filterButtons.forEach(btn => btn.classList.remove('active'));
+    button.classList.add('active');
+
+    const filter = button.getAttribute('data-filter');
+
+    projectCards.forEach(card => {
+      const categories = card.getAttribute('data-category') || '';
+      if (filter === 'all' || categories.includes(filter)) {
+        card.classList.remove('hide');
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(12px)';
+        setTimeout(() => {
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, 50);
+      } else {
+        card.classList.add('hide');
+      }
+    });
   });
 });
 
-// ===== COUNTER ANIMATION =====
-function animateCounter(el, target) {
+// ===== STAT COUNTERS ANIMATION =====
+function animateCounter(el, target, isDecimal = false) {
   let start = 0;
-  const duration = 1500;
+  const duration = 1600;
   const step = (timestamp) => {
     if (!start) start = timestamp;
     const progress = Math.min((timestamp - start) / duration, 1);
-    el.textContent = Math.floor(progress * target) + '+';
-    if (progress < 1) requestAnimationFrame(step);
-    else el.textContent = target + '+';
+    
+    if (isDecimal) {
+      el.textContent = (progress * target).toFixed(2);
+    } else {
+      const val = Math.floor(progress * target);
+      el.textContent = val + (target > 5 ? '+' : '');
+    }
+
+    if (progress < 1) {
+      requestAnimationFrame(step);
+    } else {
+      el.textContent = isDecimal ? target : target + (target > 5 ? '+' : '');
+    }
   };
   requestAnimationFrame(step);
 }
@@ -132,31 +145,52 @@ const statsObs = new IntersectionObserver(entries => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
       document.querySelectorAll('.stat-num').forEach(el => {
-        const val = parseInt(el.textContent);
-        if (!isNaN(val)) animateCounter(el, val);
+        const target = parseFloat(el.getAttribute('data-target'));
+        const isDecimal = el.getAttribute('data-decimal') === 'true';
+        if (!isNaN(target)) animateCounter(el, target, isDecimal);
       });
       statsObs.disconnect();
     }
   });
-}, { threshold: 0.5 });
+}, { threshold: 0.4 });
+
 const statsEl = document.querySelector('.hero-stats');
 if (statsEl) statsObs.observe(statsEl);
 
-// ===== CURSOR GLOW EFFECT =====
-const glow = document.createElement('div');
-glow.style.cssText = `
-  position: fixed;
-  width: 300px;
-  height: 300px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(124,58,237,0.06) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 9999;
-  transform: translate(-50%, -50%);
-  transition: all 0.1s ease;
-`;
-document.body.appendChild(glow);
-document.addEventListener('mousemove', e => {
-  glow.style.left = e.clientX + 'px';
-  glow.style.top = e.clientY + 'px';
+// ===== 3D GLASS CARD TILT EFFECT =====
+document.querySelectorAll('.project-card, .pub-card, .award-item, .cert-item').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const cx = rect.width / 2;
+    const cy = rect.height / 2;
+    const rotX = ((y - cy) / cy) * 3;
+    const rotY = ((x - cx) / cx) * -3;
+    card.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateY(-4px)`;
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = '';
+  });
 });
+
+// ===== CURSOR GLOW EFFECT (Desktop) =====
+if (window.innerWidth > 768) {
+  const glow = document.createElement('div');
+  glow.style.cssText = `
+    position: fixed;
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(124,58,237,0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: left 0.08s ease, top 0.08s ease;
+  `;
+  document.body.appendChild(glow);
+  document.addEventListener('mousemove', e => {
+    glow.style.left = e.clientX + 'px';
+    glow.style.top = e.clientY + 'px';
+  });
+}
